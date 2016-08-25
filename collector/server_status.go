@@ -48,7 +48,7 @@ type ServerStatus struct {
 
 	GlobalLock *GlobalLockStats `bson:"globalLock"`
 
-	IndexCounter *IndexCounterStats `bson:"indexCounters"`
+	IndexCounter *IndexCounterStats `bson:"indexCounters"` // NOTE: deprecated in MongoDB >= 3.0
 
 	Locks LockStatsMap `bson:"locks,omitempty"`
 
