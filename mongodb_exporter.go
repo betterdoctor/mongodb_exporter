@@ -49,6 +49,7 @@ var (
 	authPassFlag                        = flag.String("auth.pass", "", "Password for basic auth.")
 	mongodbCollectOplog                 = flag.Bool("mongodb.collect.oplog", true, "collect Mongodb Oplog status")
 	mongodbCollectReplSet               = flag.Bool("mongodb.collect.replset", true, "collect Mongodb replica set status")
+	mongodbCollectDatabaseMetrics       = flag.Bool("mongodb.collect.database", false, "collect MongoDB database metrics")
 )
 
 type basicAuthHandler struct {
@@ -105,7 +106,7 @@ func startWebServer() {
 			if err != nil {
 				glog.Fatalf("Couldn't load client CAs from %s. Got: %s", *webTlsClientCa, err)
 			}
-			server.TLSConfig = &tls.Config{
+			server.TlsConfig = &tls.Config{
 				ClientCAs:  certificates,
 				ClientAuth: tls.RequireAndVerifyClientCert,
 			}
@@ -129,13 +130,14 @@ func startWebServer() {
 
 func registerCollector() {
 	mongodbCollector := collector.NewMongodbCollector(collector.MongodbCollectorOpts{
-		URI:                   *mongodbURIFlag,
-		TLSCertificateFile:    *mongodbTlsCert,
-		TLSPrivateKeyFile:     *mongodbTlsPrivateKey,
-		TLSCaFile:             *mongodbTlsCa,
-		TLSHostnameValidation: !(*mongodbTlsDisableHostnameValidation),
-		CollectOplog:          *mongodbCollectOplog,
-		CollectReplSet:        *mongodbCollectReplSet,
+		URI:                    *mongodbURIFlag,
+		TlsCertificateFile:     *mongodbTlsCert,
+		TlsPrivateKeyFile:      *mongodbTlsPrivateKey,
+		TlsCaFile:              *mongodbTlsCa,
+		TlsHostnameValidation:  !(*mongodbTlsDisableHostnameValidation),
+		CollectOplog:           *mongodbCollectOplog,
+		CollectReplSet:         *mongodbCollectReplSet,
+		CollectDatabaseMetrics: *mongodbCollectDatabaseMetrics,
 	})
 	prometheus.MustRegister(mongodbCollector)
 }
