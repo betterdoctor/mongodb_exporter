@@ -49,6 +49,7 @@ var (
 	authPassFlag                        = flag.String("auth.pass", "", "Password for basic auth.")
 	mongodbCollectOplog                 = flag.Bool("mongodb.collect.oplog", true, "collect Mongodb Oplog status")
 	mongodbCollectReplSet               = flag.Bool("mongodb.collect.replset", true, "collect Mongodb replica set status")
+	mongodbCollectDatabaseMetrics       = flag.Bool("mongodb.collect.database", false, "collect MongoDB database metrics")
 )
 
 type basicAuthHandler struct {
@@ -138,13 +139,14 @@ func startWebServer() {
 
 func registerCollector() {
 	mongodbCollector := collector.NewMongodbCollector(collector.MongodbCollectorOpts{
-		URI:                   *mongodbURIFlag,
-		TLSCertificateFile:    *mongodbTLSCert,
-		TLSPrivateKeyFile:     *mongodbTLSPrivateKey,
-		TLSCaFile:             *mongodbTLSCa,
-		TLSHostnameValidation: !(*mongodbTLSDisableHostnameValidation),
-		CollectOplog:          *mongodbCollectOplog,
-		CollectReplSet:        *mongodbCollectReplSet,
+		URI:                    *mongodbURIFlag,
+		TLSCertificateFile:     *mongodbTLSCert,
+		TLSPrivateKeyFile:      *mongodbTLSPrivateKey,
+		TLSCaFile:              *mongodbTLSCa,
+		TLSHostnameValidation:  !(*mongodbTLSDisableHostnameValidation),
+		CollectOplog:           *mongodbCollectOplog,
+		CollectReplSet:         *mongodbCollectReplSet,
+		CollectDatabaseMetrics: *mongodbCollectDatabaseMetrics,
 	})
 	prometheus.MustRegister(mongodbCollector)
 }
